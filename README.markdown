@@ -13,6 +13,7 @@ This repository contains a pipeline for processing heart rate variability (HRV) 
 
 - **v3_utils.py**:
   - `FileUtils.preprocess_dataframe`: Applies all HRV preprocessing rules
+    
      ```
           range_250_2000_rule -> karlsson_rule -> acar_rule -> malik_rule
        ```
