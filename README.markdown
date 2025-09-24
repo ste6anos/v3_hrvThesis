@@ -12,10 +12,14 @@ This repository contains a pipeline for processing heart rate variability (HRV) 
 ## Scripts Description
 
 - **v3_utils.py**:
-  - `FileUtils.preprocess_dataframe`: Applies HRV preprocessing rules (e.g., 'malik') to filter valid BBI data.
-  - `FileUtils.calc_awake_sleep_dfs`: Segments data into awake and sleep periods based on BBI thresholds.
-  - `FileUtils.window_check`: Validates sliding windows for sufficient BBI data.
-  - `FileUtils.group_and_apply_sliding_window_calculations`: Computes HRV metrics (e.g., RMSSD, SDNN) over sliding windows.
+  - `FileUtils.preprocess_dataframe`: Applies all HRV preprocessing rules
+     ```
+          range_250_2000_rule -> karlsson_rule -> acar_rule -> malik_rule
+       ```
+     to filter valid BBI data.
+  - `FileUtils.window_check`: Validates sliding windows for sufficient BBI data (using the threshold in the FLIRT paper).
+  - `FileUtils.calc_awake_sleep_dfs`: Segments data into awake and sleep periods based on whether the heartrate is less than 0.9*avg_heart_rate (knowing that sleeping hr is slower by 20% than awake).
+  - `FileUtils.group_and_apply_sliding_window_calculations`: Computes HRV metrics (e.g., RMSSD, SDNN) over sliding windows and return the mean hrv metric value for all windows.
 
 - **v3_pipeline.py**:
   - Loads clinical metadata and BBI files.
@@ -23,7 +27,7 @@ This repository contains a pipeline for processing heart rate variability (HRV) 
   - Processes each patient’s data using `FileUtils` methods, saving results in Parquet format.
 
 - **preprocessing.py**:
-  - Defines the `HRVPreprocessor` class for preprocessing BBI data with rules like 'range_250_2000', 'karlsson', 'acar', and 'malik' (implementation not provided).
+  - Defines the `HRVPreprocessor` class for preprocessing BBI data with rules like 'range_250_2000', 'karlsson', 'acar', and 'malik'.
 
 ## Notes
 
