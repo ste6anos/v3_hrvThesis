@@ -1,0 +1,147 @@
+# HRV Analysis Pipeline
+
+## Overview
+
+This repository contains a pipeline for processing heart rate variability (HRV) data to compute awake and sleep metrics for patients. The pipeline processes beat-to-beat interval (BBI) data stored in Parquet files, applies preprocessing, segments data into awake and sleep periods, and calculates HRV metrics using sliding windows. Results are saved as Parquet files for further analysis. Additional utilities support statistical hypothesis testing, correlation analysis, and data visualization for HRV metrics in relation to clinical data (e.g., CRP levels and flare status).
+
+## Repository Structure
+
+```
+├── v3_utils.py              # Core utilities for data processing and analysis
+├── v3_pipeline.py           # Main pipeline orchestration script
+├── v3_dfploting.py          # Visualization script for HRV metrics
+├── v3_metricsAnalysis.py    # Statistical analysis and hypothesis testing
+└── preprocessing.py         # HRV preprocessing rules (external dependency)
+```
+
+## Scripts Description
+
+### v3_utils.py
+
+The `FileUtils` class provides static methods for core data handling and analysis tasks:
+
+#### `FileUtils.preprocess_dataframe`
+Applies all HRV preprocessing rules to filter valid BBI data:
+- **Rules applied in sequence**: `range_250_2000_rule` → `karlsson_rule` → `acar_rule` → `malik_rule`
+- Sorts by time, extracts intervals, and combines validity checks from multiple rules
+- Returns a filtered DataFrame with `time` and `bbi` columns
+- Handles errors gracefully with logging
+
+#### `FileUtils.window_check`
+Validates sliding windows for sufficient BBI data using the threshold from the FLIRT paper:
+- Computes window duration in milliseconds, mean BBI, and interval count
+- Checks if `(N * M) / L > threshold`, where:
+  - `N` = number of intervals
+  - `M` = mean BBI
+  - `L` = window duration
+
+#### `FileUtils.calc_awake_sleep_dfs`
+Segments data into awake and sleep periods based on heart rate:
+- **Threshold**: Sleep identified when HR < 0.9 × avg_heart_rate (sleeping HR is ~20% slower than awake)
+- Computes threshold from mean BBI
+- Handles duplicates in indices/times
+- Assigns sleeping status (1 for sleep, -1 for awake)
+- Merges short segments (< `min_duration`, e.g., '3min')
+- Returns separate awake and sleep DataFrames
+
+#### `FileUtils.group_and_apply_sliding_window_calculations`
+Computes HRV metrics over sliding windows:
+- **Time-domain metrics**: RMSSD, SDNN
+- **Frequency-domain metrics**: ULF, VLF, LF, HF
+- **Default window settings**: 3 frames at 100min offset
+- Bins time data, iterates over windows with progress tracking (tqdm)
+- Validates with `window_check`
+- Uses NeuroKit2 for calculations
+- Returns the mean across valid windows
+- Includes garbage collection for memory management
+
+#### `FileUtils.extract_crp_data_from_csv`
+Extracts and normalizes C-reactive protein (CRP) data from a CSV file:
+- Selects relevant columns: `patientid`, `DOC_PAT_CRP_DATE`, `DOC_PAT_CRP_LEVEL`, `DOC_PAT_CRP_UNIT`
+- Converts mg/dL units to mg/L by multiplying by 10
+- Returns a cleaned DataFrame with `patientid` and normalized `DOC_PAT_CRP_LEVEL`
+
+#### `FileUtils.hypothesis_test_binary_target`
+Performs group comparison tests:
+- Uses independent t-test if both groups are normal
+- Uses Mann-Whitney U test otherwise
+- Compares shared numeric metrics between two DataFrames (e.g., flare "Yes" vs. "No" groups)
+- Uses Shapiro-Wilk for normality checks
+- Skips small samples (<3 per group)
+- Returns a sorted DataFrame of results (method, p-value, normality p-values)
+
+#### `FileUtils.correlation_test`
+Performs correlation tests:
+- Uses Pearson if both variables normal
+- Uses Spearman otherwise
+- Tests numeric columns (excluding the last/target) against the last column (target, e.g., CRP level)
+- Drops NaNs in target upfront and per-metric rows with NaNs
+- Uses Shapiro-Wilk for normality
+- Skips small samples (<3)
+- Returns a sorted DataFrame of results (method, correlation coefficient, p-value, normality p-values, sample size)
+
+### v3_pipeline.py
+
+The main pipeline script that orchestrates the processing:
+
+1. Loads clinical metadata and BBI files
+2. Filters patients based on clinical data and available BBI recordings
+3. Processes each patient's data using `FileUtils` methods
+4. Saves results in Parquet format
+
+### v3_dfploting.py
+
+Visualization script for generating histograms:
+
+1. Loads HRV mean measurement data from directories for awake (aw) and sleep (sl) states (Parquet files per patient)
+2. Concatenates patient data into two DataFrames (`df1` for awake, `df2` for sleep), skipping specific patients (e.g., 'p2010001', 'p2070001')
+3. Saves concatenated DataFrames as CSVs
+4. Generates overlaid histograms for all numeric columns (excluding last 5):
+   - Uses Matplotlib subplots (up to 3 per row)
+   - Colors: red for awake, blue for sleep
+   - Includes Greek labels for titles/x/y axes and legend
+   - Adjusts layout for spacing and saves/displays the figure
+
+### v3_metricsAnalysis.py
+
+Statistical analysis script for hypothesis testing and correlations:
+
+1. Loads clinical metadata and extracts/normalizes CRP data using `FileUtils.extract_crp_data_from_csv`
+2. Loads preprocessed HRV CSVs for awake (`df_aw`) and sleep (`df_sl`)
+3. Filters subsets by flare status ("Yes"/"No") and state (awake/sleeping)
+4. Performs binary hypothesis tests using `FileUtils.hypothesis_test_binary_target` (prints results for awake/sleep flare groups)
+5. Merges HRV data with CRP, then runs correlation tests using `FileUtils.correlation_test` (prints results for awake/sleep vs. CRP)
+
+**Note**: Includes commented code for boxplot visualization.
+
+### preprocessing.py
+
+Defines the `HRVPreprocessor` class for preprocessing BBI data with rules:
+- `range_250_2000`
+- `karlsson`
+- `acar`
+- `malik`
+
+## Notes and Considerations
+
+### Data Directory Structure
+- Ensure the data directory structure matches the paths specified in `v3_pipeline.py` and `v3_metricsAnalysis.py`
+- Required files: HRV CSVs, clinical metadata, BBI Parquet files
+
+### Duplicate Handling
+- Handle duplicate indices or time values in input data to avoid warnings
+- See `v3_utils.py` for duplicate handling in `calc_awake_sleep_dfs`
+
+### Window Check Threshold
+- Adjust the `window_check_threshold` parameter in `v3_pipeline.py` or `group_and_apply_sliding_window_calculations` if different thresholds are needed for awake and sleep states
+
+### Memory Management
+- For large datasets, consider enabling patient segmentation in `v3_pipeline.py` to manage memory usage
+- Garbage collection is included in sliding window calculations
+
+### Statistical Tests
+- Statistical tests in `v3_utils.py` assume numeric data and skip small samples
+- Review p-value thresholds (e.g., 0.05 for normality) for your analysis
+
+### Visualizations
+- Visualizations in `v3_dfploting.py` use fixed paths and exclusions—update for new datasets
