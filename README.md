@@ -11,7 +11,7 @@ This repository contains a pipeline for processing heart rate variability (HRV) 
 ├── v3_pipeline.py           # Main pipeline orchestration script in order to calculate HRV metrics
 ├── v3_dfploting.py          # Visualization script for HRV metrics
 ├── v3_metricsAnalysis.py    # Statistical analysis and hypothesis testing
-└── preprocessing.py         # HRV preprocessing rules (external dependency)
+└── preprocessing.py         # HRV preprocessing rules 
 ```
 
 ## Scripts Description
