@@ -145,3 +145,33 @@ Defines the `HRVPreprocessor` class for preprocessing BBI data with rules:
 
 ### Visualizations
 - Visualizations in `v3_dfploting.py` use fixed paths and exclusions—update for new datasets
+
+
+
+
+
+
+## Results
+
+This section summarizes the HRV (Heart Rate Variability) metrics computed for different sliding window sizes (90m, 300m, 600m, and 1500m) using the analysis pipeline in `v3_metricsAnalysis.py`. For each window size:
+
+- **HRV Metrics Plot**: Visualizes the distribution of key HRV metrics (e.g., RMSSD, SDNN, LF/HF ratio) across awake (threshold 0.5) and sleep (threshold 0.45) states.
+- **Hypothesis Test Table**: Displays results from binary hypothesis equality tests against clinical targets (e.g., flare status, sex, smoking history), including p-values and test methods. Significant results (p < 0.05) are color-coded by state (awake: light blue; sleep: light green).
+
+Results are generated in the `outputs/` directory and visualized below for quick reference.
+
+| Window Size | HRV Metrics Plot | Hypothesis Test Table |
+|-------------|------------------|-----------------------|
+| **90m** | ![HRV Metrics - 90m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/plot_w90m_threshold_aw05_sl045.png?raw=true) | ![Hypothesis Tests - 90m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W90M.png?raw=true) |
+| **300m** | ![HRV Metrics - 300m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/plot_w300m_threshold_aw05_sl045.png?raw=true) | ![Hypothesis Tests - 300m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W300M.png?raw=true) |
+| **600m** | ![HRV Metrics - 600m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/plot_w600m_threshold_aw05_sl045.png?raw=true) | ![Hypothesis Tests - 600m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W600M.png?raw=true) |
+| **1500m** | ![HRV Metrics - 1500m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/plot_w1500m_threshold_aw05_sl045.png?raw=true) | ![Hypothesis Tests - 1500m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W1500M.png?raw=true) |
+
+### Key Insights
+- **Metrics Included**: RMSSD, SDNN, HTI, VHF, LF/HF, LFn, TP, LF, ULF, VLF, HF, HFn, LnHF.
+- **Testing**: Binary t-tests or Mann-Whitney U-tests (auto-selected based on normality) for each target vs. HRV metrics, separated by awake/sleep states.
+- **Correlations**: CRP correlations are appended as the final row in tables, formatted as `p-value(correlation)`.
+- **Significance**: Cells highlight p < 0.05 results for easy scanning.
+
+For raw data and scripts, see the [outputs/](https://github.com/ste6anos/v3_hrvThesis/tree/main/outputs) folder. Run `v3_metricsAnalysis.py` with adjusted window parameters to regenerate.
+
