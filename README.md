@@ -1,4 +1,6 @@
-# HRV Analysis Pipeline (RESULTS AVAILABLE IN THE LAST PART OF THE README FILE)
+# __RESULTS AVAILABLE: [*/output/readme.md*](https://github.com/ste6anos/v3_hrvThesis/tree/main/outputs))__
+
+# HRV Analysis Pipeline 
 
 ## Overview
 
