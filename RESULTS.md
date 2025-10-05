@@ -1,4 +1,5 @@
-###v3_metricsAnalysis.py: HRV Metrics Statistical Analysis Script
+###v3_metricsAnalysis.py
+HRV Metrics Statistical Analysis Script
 Statistical analysis script for hypothesis testing against multiple binary clinical targets and correlations with CRP:
 
 Loads clinical metadata (clinical_d32_T0_v2.csv) and extracts CRP data using StatsUtils.extract_crp_data_from_csv.
