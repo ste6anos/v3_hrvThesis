@@ -171,10 +171,10 @@ Results are generated in the `outputs/` directory and visualized below for quick
 
 ### 300m Window
 
-**HRV Metrics Plot**   the t-test or u-test is referred as (u), (t)
+**HRV Metrics Plot**   
 ![HRV Metrics - 300m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/hystogram_windowduration300m.png?raw=true)
 
-**Hypothesis Test Table**  
+**Hypothesis Test Table**  the t-test or u-test is referred as (u), (t)
 ![Hypothesis Tests - 300m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W300M.png?raw=true)
 
 ### 600m Window
