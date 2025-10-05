@@ -166,12 +166,12 @@ Results are generated in the `outputs/` directory and visualized below for quick
 **HRV Metrics Plot**  
 ![HRV Metrics - 90m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/plot_w90m_threshold_aw05_sl045.png?raw=true)
 
-**Hypothesis Test Table**   the t-test or u-test is refered as (u), (t)
+**Hypothesis Test Table**   the t-test or u-test is referred as (u), (t)
 ![Hypothesis Tests - 90m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W90M.png)
 
 ### 300m Window
 
-**HRV Metrics Plot**   the t-test or u-test is refered as (u), (t)
+**HRV Metrics Plot**   the t-test or u-test is referred as (u), (t)
 ![HRV Metrics - 300m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/hystogram_windowduration300m.png?raw=true)
 
 **Hypothesis Test Table**  
@@ -182,7 +182,7 @@ Results are generated in the `outputs/` directory and visualized below for quick
 **HRV Metrics Plot**  
 ![HRV Metrics - 600m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/plot_w600m.png?raw=true)
 
-**Hypothesis Test Table**   the t-test or u-test is refered as (u), (t)
+**Hypothesis Test Table**   the t-test or u-test is referred as (u), (t)
 ![Hypothesis Tests - 600m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W600M.png?raw=true)
 
 ### 1500m Window
@@ -190,7 +190,7 @@ Results are generated in the `outputs/` directory and visualized below for quick
 **HRV Metrics Plot**  
 ![HRV Metrics - 1500m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/wind1500mSL025AW050.png?raw=true)
 
-**Hypothesis Test Table**   the t-test or u-test is refered as (u), (t)
+**Hypothesis Test Table**   the t-test or u-test is referred as (u), (t)
 ![Hypothesis Tests - 1500m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W1500M.png?raw=true)
 
 ### Key Insights
