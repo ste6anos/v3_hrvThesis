@@ -1,4 +1,4 @@
-# HRV Analysis Pipeline
+# HRV Analysis Pipeline (RESULTS AVAILABLE IN THE LAST PART OF THE README FILE)
 
 ## Overview
 
