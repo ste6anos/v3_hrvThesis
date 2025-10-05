@@ -4,7 +4,7 @@ This section summarizes the HRV (Heart Rate Variability) metrics computed for di
 
 - **HRV Metrics Plot**: Visualizes the distribution of key HRV metrics (e.g., RMSSD, SDNN, LF/HF ratio) across awake (threshold 0.5) and sleep (threshold 0.45) states.
 - **Hypothesis Test Table**: Displays results from binary hypothesis equality tests against clinical targets (e.g., flare status, sex, smoking history), including p-values and test methods. Significant results (p < 0.05) are color-coded by state (awake: light blue; sleep: light green).
-- *Correlation Test**: A correlation test on CRP values has been added to the last row of the results table.
+- **Correlation Test**: A correlation test on CRP values has been added to the last row of the results table.
 
 Results are generated in the `outputs/` directory and visualized below for quick reference.
 
