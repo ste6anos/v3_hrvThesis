@@ -3,7 +3,7 @@
 This section summarizes the HRV (Heart Rate Variability) metrics computed for different sliding window sizes (90m, 300m, 600m, and 1500m) using the analysis pipeline in `v3_metricsAnalysis.py`. For each window size:
 
 - **HRV Metrics Plot**: Visualizes the distribution of key HRV metrics (e.g., RMSSD, SDNN, LF/HF ratio) across awake (threshold 0.5) and sleep (threshold 0.45) states.
-- **Hypothesis Test Table**: Displays results from binary hypothesis equality tests against clinical targets (e.g., flare status, sex, smoking history), including p-values and test methods. Significant results (p < 0.05) are color-coded by state (awake: light blue; sleep: light green). The t-test or u-test is referred as (u), (t)
+- **Hypothesis Test Table**: Displays results from binary hypothesis equality tests against clinical targets (e.g., flare status, sex, smoking history), including p-values and test methods. Significant results (p < 0.05) are color-coded by state (awake: light blue; sleep: light green). The t-test or u-test is referred as (t) & (u) in the results table.
 - **Correlation Test**: A correlation test on CRP values has been added to the last row of the results table.
 
 Results are generated in the `outputs/` directory and visualized below for quick reference.
