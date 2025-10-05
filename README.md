@@ -195,9 +195,9 @@ Results are generated in the `outputs/` directory and visualized below for quick
 
 ### Key Insights
 - **Metrics Included**: RMSSD, SDNN, HTI, VHF, LF/HF, LFn, TP, LF, ULF, VLF, HF, HFn, LnHF.
-- **Testing**: Binary t-tests or Mann-Whitney U-tests (auto-selected based on normality) for each target vs. HRV metrics, separated by awake/sleep states.
+- **Testing**: Binary t-tests, as (t), or Mann-Whitney U-tests, as (u), (auto-selected based on normality) for each target vs. HRV metrics, separated by awake/sleep states.
 - **Correlations**: CRP correlations are appended as the final row in tables, formatted as `p-value(correlation)`.
 - **Significance**: Cells highlight p < 0.05 results for easy scanning.
 
-For raw data and scripts, see the [outputs/](https://github.com/ste6anos/v3_hrvThesis/tree/main/outputs) folder. Run `v3_metricsAnalysis.py` with adjusted window parameters to regenerate.
+For raw data and scripts, see the [outputs/](https://github.com/ste6anos/v3_hrvThesis/tree/main/outputs) folder. Run `v3_csvMetricsAnalysis.py` and `v3_dfploting` with adjusted window parameters to regenerate.
 
