@@ -161,6 +161,8 @@ This section summarizes the HRV (Heart Rate Variability) metrics computed for di
 
 Results are generated in the `outputs/` directory and visualized below for quick reference.
 
+**The thresholds for long-sized windows are lower in the sleeping state because the window_check function is applied to whole-day data, where the sleep segment is relatively smaller than the awake segment. For example, if the window size is 1500 min (= 25 h) and the subject normally sleeps for 8 h, the threshold is <0.31 by definition.**
+
 ### 90m Window
 
 **HRV Metrics Plot**  
