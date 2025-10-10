@@ -18,7 +18,7 @@ This repository contains a pipeline for processing heart rate variability (HRV) 
 
 ## Scripts Description
 
-### v3_utils.py
+### **1)** v3_utils.py
 
 The `FileUtils` class provides static methods for core data handling and analysis tasks:
 
@@ -82,7 +82,7 @@ Performs correlation tests:
 - Skips small samples (<3)
 - Returns a sorted DataFrame of results (method, correlation coefficient, p-value, normality p-values, sample size)
 
-### v3_pipeline.py
+### **2)** v3_pipeline.py
 
 The main pipeline script that orchestrates the processing:
 
@@ -91,7 +91,7 @@ The main pipeline script that orchestrates the processing:
 3. Processes each patient's data using `FileUtils` methods
 4. Saves results in Parquet format
 
-### v3_dfploting.py
+### **3)** v3_dfploting.py
 
 Visualization script for generating histograms:
 
@@ -104,7 +104,7 @@ Visualization script for generating histograms:
    - Includes Greek labels for titles/x/y axes and legend
    - Adjusts layout for spacing and saves/displays the figure
 
-## v3_metricsAnalysis.py: HRV Metrics Statistical Analysis Script
+## **4)** v3_metricsAnalysis.py: HRV Metrics Statistical Analysis Script
 
 Statistical analysis script for hypothesis testing against multiple binary clinical targets and correlations with CRP:
 
@@ -117,7 +117,42 @@ Statistical analysis script for hypothesis testing against multiple binary clini
 
 Note: Window size is 1500 minutes. Includes commented code for debugging (e.g., saving subsets to CSV) and boxplot visualization of CRP. Colors: Awake (p<0.05: #add8e6; p≥0.05: #f0f0f0); Sleep (p<0.05: #90ee90; p≥0.05: #ffffff).
 
-### preprocessing.py
+## **5)** ## v3_logisticRegression.py
+
+Logistic Regression with Forward Feature Selection for CRP Prediction.
+Machine learning pipeline for predicting elevated CRP levels (≥4 mg/L) using HRV features with Elastic Net regularization and sequential feature selection:
+
+### Methodology
+
+#### **Elastic Net Logistic Regression**
+- Implements **Elastic Net regularization** combining L1 (Lasso) and L2 (Ridge) penalties
+- **Hyperparameter optimization** via GridSearchCV:
+  - `C`: Regularization strength (0.1 to 10.0 in 0.5 increments)
+  - `l1_ratio`: L1/L2 mixing parameter (0.1 to 1.0 in 0.2 increments)
+- Uses `saga` solver capable of handling both L1 and L2 penalties
+- 5-fold stratified cross-validation for robust performance estimation
+
+#### **Sequential Forward Feature Selection**
+The algorithm employs an iterative approach to identify the optimal combination of HRV metrics:
+
+1. **Initialization**: Start with empty feature set and all 13 HRV metrics available
+   - RMSSD, SDNN, HTI, ULF, VLF, LF, HF, VHF, TP, LFHF, LFn, HFn, LnHF
+
+2. **Iterative Selection Process**:
+   - **Step 1**: Test each HRV metric individually with hyperparameter tuning
+   - **Step 2**: Select the single metric yielding highest cross-validation accuracy
+   - **Step 3**: Lock this metric as the first selected feature
+   - **Step 4**: Test remaining metrics in combination with locked feature(s)
+   - **Step 5**: Add the metric that provides maximum improvement in CV accuracy
+   - **Step 6**: Repeat until no further improvement or all features tested
+
+3. **Stopping Criterion**:
+   - Process continues while: `current_CV_accuracy > previous_best_CV_accuracy`
+   - Stops when adding any remaining feature decreases or doesn't improve performance
+   - Maximum features limited to prevent overfitting
+
+
+## **6)** preprocessing.py
 
 Defines the `HRVPreprocessor` class for preprocessing BBI data with rules:
 - `range_250_2000`
@@ -125,6 +160,8 @@ Defines the `HRVPreprocessor` class for preprocessing BBI data with rules:
 - `acar`
 - `malik`
 
+
+--------------------------------
 ## Notes and Considerations
 
 ### Data Directory Structure
