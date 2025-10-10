@@ -1,8 +1,8 @@
-# __RESULTS AVAILABLE: [*/output/readme.md*](https://github.com/ste6anos/v3_hrvThesis/tree/main/outputs))__
+__RESULTS AVAILABLE: [*/output/readme.md*](https://github.com/ste6anos/v3_hrvThesis/tree/main/outputs))__
 
-# HRV Analysis Pipeline 
+-----------------------------------------------------------------------------------------------------------
 
-## Overview
+# HRV Analysis οverview
 
 This repository contains a pipeline for processing heart rate variability (HRV) data to compute awake and sleep metrics for patients. The pipeline processes beat-to-beat interval (BBI) data stored in Parquet files, applies preprocessing, segments data into awake and sleep periods, and calculates HRV metrics using sliding windows. Results are saved as Parquet files for further analysis. Additional utilities support statistical hypothesis testing, correlation analysis, and data visualization for HRV metrics in relation to clinical data (e.g., CRP levels and flare status).
 
