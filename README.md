@@ -9,11 +9,12 @@ This repository contains a pipeline for processing heart rate variability (HRV) 
 ## Repository Structure
 
 ```
-├── v3_utils.py              # Core utilities for data processing and analysis
-├── v3_pipeline.py           # Main pipeline orchestration script in order to calculate HRV metrics
-├── v3_dfploting.py          # Visualization script for HRV metrics
-├── v3_metricsAnalysis.py    # Statistical analysis and hypothesis testing
-└── preprocessing.py         # HRV preprocessing rules 
+├── v3_utils.py # Core utilities for data processing and analysis
+├── v3_pipeline.py # Main pipeline orchestration script in order to calculate HRV metrics
+├── v3_dfploting.py # Visualization script for HRV metrics
+├── v3_metricsAnalysis.py # Statistical analysis and hypothesis testing
+├── v3_logisticRegression.py # Logistic regression with feature selection for CRP prediction
+└── preprocessing.py # HRV preprocessing rules
 ```
 
 ## Scripts Description
