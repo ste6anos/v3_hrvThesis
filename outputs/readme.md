@@ -1,4 +1,7 @@
-## Results
+### *Results*:
+------------------------------------------------
+
+## **1)** Hypothesis/Correlation tests and hrv_metric plots per windowsize
 
 This section summarizes the HRV (Heart Rate Variability) metrics computed for different sliding window sizes (90m, 300m, 600m, and 1500m) using the analysis pipeline in `v3_metricsAnalysis.py`. For each window size:
 
@@ -42,6 +45,10 @@ Results are generated in the `outputs/` directory and visualized below for quick
 **Hypothesis Test Table**  
 ![Hypothesis Tests - 1500m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W1500M.png?raw=true)
 
+2) ## Logistic Regression 
+
+**Classification Performance Across All Window Sizes**  
+![Logistic Regression Results](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/logistic_regression_results.png?raw=true)
 ### Key Insights
 - **Metrics Included**: RMSSD, SDNN, HTI, VHF, LF/HF, LFn, TP, LF, ULF, VLF, HF, HFn, LnHF.
 - **Testing**: Binary t-tests, as (t), or Mann-Whitney U-tests, as (u), (auto-selected based on normality) for each target vs. HRV metrics, separated by awake/sleep states.
