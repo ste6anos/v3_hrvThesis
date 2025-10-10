@@ -17,9 +17,9 @@ This repository contains a pipeline for processing heart rate variability (HRV) 
 └── preprocessing.py # HRV preprocessing rules
 ```
 
-## Scripts Description
+### Scripts Description
 
-### **1)** v3_utils.py
+## **1)** v3_utils.py
 
 The `FileUtils` class provides static methods for core data handling and analysis tasks:
 
@@ -83,7 +83,7 @@ Performs correlation tests:
 - Skips small samples (<3)
 - Returns a sorted DataFrame of results (method, correlation coefficient, p-value, normality p-values, sample size)
 
-### **2)** v3_pipeline.py
+## **2)** v3_pipeline.py
 
 The main pipeline script that orchestrates the processing:
 
@@ -92,7 +92,7 @@ The main pipeline script that orchestrates the processing:
 3. Processes each patient's data using `FileUtils` methods
 4. Saves results in Parquet format
 
-### **3)** v3_dfploting.py
+## **3)** v3_dfploting.py
 
 Visualization script for generating histograms:
 
@@ -105,8 +105,9 @@ Visualization script for generating histograms:
    - Includes Greek labels for titles/x/y axes and legend
    - Adjusts layout for spacing and saves/displays the figure
 
-## **4)** v3_metricsAnalysis.py: HRV Metrics Statistical Analysis Script
+## **4)** v3_metricsAnalysis.py
 
+HRV Metrics Statistical Analysis Script
 Statistical analysis script for hypothesis testing against multiple binary clinical targets and correlations with CRP:
 
 1. Loads clinical metadata (`clinical_d32_T0_v2.csv`) and extracts CRP data using `StatsUtils.extract_crp_data_from_csv`.
@@ -118,7 +119,7 @@ Statistical analysis script for hypothesis testing against multiple binary clini
 
 Note: Window size is 1500 minutes. Includes commented code for debugging (e.g., saving subsets to CSV) and boxplot visualization of CRP. Colors: Awake (p<0.05: #add8e6; p≥0.05: #f0f0f0); Sleep (p<0.05: #90ee90; p≥0.05: #ffffff).
 
-## **5)** ## v3_logisticRegression.py
+## **5)** v3_logisticRegression.py
 
 Logistic Regression with Forward Feature Selection for CRP Prediction.
 Machine learning pipeline for predicting elevated CRP levels (≥4 mg/L) using HRV features with Elastic Net regularization and sequential feature selection:
