@@ -1,4 +1,24 @@
 ### *Results*:
+
+```
+Key Findings on hypothesis tests:
+Primary Clinical Focus: DOC_FLARE and PAT_FLARE
+These targets were prioritized as they best represent the overall clinical picture.
+- RMSSD during awake state consistently differentiates DOC_FLARE across all window sizes
+- PAT_FLARE shows similar differentiation with RMSSD during awake state, though with 
+  slight uncertainty (p-values of 0.052 for 600m and 1500m window sizes, approaching significance)
+- Other metrics show inconsistent patterns across different conditions
+- Notable tendencies observed:
+  ~VHF, ULF, and LnHF during sleep classify PAT_FLARE in long-lasting windows (and in the shortest 90m window)
+  ~SDNN and HTI during sleep classify DOC_FLARE in long-lasting windows
+
+CRP Value Analysis:
+- Correlation tests reveal no evidence of linear relationship (Pearson/Spearman) 
+  between any HRV metrics and CRP values
+- Logistic regression using CRP threshold of 4 mg/L (high/low classification)
+  shows limited separation capability with average accuracy of 0.65
+- No concrete evidence of HRV metrics' predictive ability for CRP levels
+```
 ------------------------------------------------
 
 ## **1)** Hypothesis/Correlation tests and hrv_metric plots per windowsize
