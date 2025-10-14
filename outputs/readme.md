@@ -41,6 +41,14 @@ Results are generated in the `outputs/` directory and visualized below for quick
 **Hypothesis Test Table**  
 ![Hypothesis Tests - 90m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W90M.png)
 
+### 180m Window
+
+**HRV Metrics Plot**  
+![HRV Metrics - 180m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/plot_w180m_aw05_sl045.png?raw=true)
+
+**Hypothesis Test Table**  
+![Hypothesis Tests - 180m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W180M.png)
+
 ### 300m Window
 
 **HRV Metrics Plot**   
@@ -68,7 +76,7 @@ Results are generated in the `outputs/` directory and visualized below for quick
 ## **2)** Logistic Regression 
 
 **Classification Performance Across All Window Sizes**  
-![Logistic Regression Results](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/logisticRegration_Results.png?raw=true)
+![Logistic Regression Results](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/logisticRegression_results.png?raw=true)
 ### Key Insights
 - **Metrics Included**: RMSSD, SDNN, HTI, VHF, LF/HF, LFn, TP, LF, ULF, VLF, HF, HFn, LnHF.
 - **Testing**: Binary t-tests, as (t), or Mann-Whitney U-tests, as (u), (auto-selected based on normality) for each target vs. HRV metrics, separated by awake/sleep states.
