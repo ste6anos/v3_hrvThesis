@@ -52,7 +52,7 @@ Results are generated in the `outputs/` directory and visualized below for quick
 ### 300m Window
 
 **HRV Metrics Plot**   
-![HRV Metrics - 300m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/hystogram_windowduration300m.png?raw=true)
+![HRV Metrics - 300m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/plot_w300m_aw05_sl045.png?raw=true)
 
 **Hypothesis Test Table**  
 ![Hypothesis Tests - 300m](https://github.com/ste6anos/v3_hrvThesis/blob/main/outputs/W300M.png?raw=true)
