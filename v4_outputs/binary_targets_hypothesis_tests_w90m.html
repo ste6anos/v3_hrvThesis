@@ -1,0 +1,1508 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Targets Hypothesis Tests</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: #f8f9fa;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: white;
+            border-bottom: 2px solid #e9ecef;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .header p {
+            font-size: 0.95em;
+            color: #6c757d;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .legend {
+            background: #f6f8fa;
+            padding: 20px;
+            border: 1px solid #e1e4e8;
+            border-radius: 4px;
+            margin-bottom: 32px;
+        }
+
+        .legend h3 {
+            font-size: 0.875em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #24292e;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px;
+        }
+
+        .legend-item {
+            padding: 8px 12px;
+            border: 1px solid #e1e4e8;
+            border-radius: 3px;
+            font-size: 0.875em;
+        }
+
+        .target-section {
+            margin-bottom: 60px;
+        }
+
+        .target-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875em;
+            background: white;
+            border: 1px solid #e1e4e8;
+        }
+
+        th {
+            background: #f6f8fa;
+            color: #24292e;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #e1e4e8;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e1e4e8;
+        }
+
+        tr:hover {
+            background: #f6f8fa;
+        }
+
+        .sig {
+            background: #d4edda;
+            font-weight: 600;
+        }
+
+        .not-sig {
+            background: #ffffff;
+        }
+
+        .panel {
+            background: #fafbfc;
+            border: 1px solid #e1e4e8;
+            border-radius: 4px;
+            padding: 16px;
+        }
+
+        .panel h3 {
+            font-size: 1em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #24292e;
+        }
+
+        .stat-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge-sig {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .badge-not-sig {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .footer {
+            background: #f6f8fa;
+            color: #586069;
+            padding: 24px;
+            text-align: center;
+            border-top: 1px solid #e1e4e8;
+            font-size: 0.875em;
+        }
+
+        @media (max-width: 1200px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Binary Targets Hypothesis Tests</h1>
+            <p>HRV Metrics Discrimination Analysis - Low & High HR Activity States</p>
+            <p style="font-size: 0.85em; margin-top: 8px; color: #6c757d;">
+                Generated on 2025-11-15 16:21:34
+            </p>
+        </div>
+
+        <div class="content">
+            <div class="legend">
+                <h3>Interpretation Guide</h3>
+                <div class="legend-items">
+                    <div class="legend-item sig">
+                        <strong>p &lt; 0.05:</strong> Significant difference (green highlight)
+                    </div>
+                    <div class="legend-item not-sig">
+                        <strong>p ≥ 0.05:</strong> No significant difference
+                    </div>
+                    <div class="legend-item" style="background: #fff3cd;">
+                        <strong>Method:</strong> t-test (normal) or Mann-Whitney U (non-normal)
+                    </div>
+                </div>
+            </div>
+
+            <div class="target-section">
+                <h2>DEMOGR_SEX</h2>
+                <p style="margin-bottom: 16px; color: #586069; font-size: 0.9em;">
+                    Gender comparison: Male vs Female
+                </p>
+
+                <div class="comparison-grid">
+                    <div class="panel">
+                        <h3>Low HR Activity</h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HRV Metric</th>
+                                    <th>p-value</th>
+                                    <th>Method</th>
+                                    <th>n (Group 1)</th>
+                                    <th>n (Group 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="not-sig">
+                                    <td><strong>RMSSD</strong></td>
+                                    <td>0.8754</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>SDNN</strong></td>
+                                    <td>0.6897</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HTI</strong></td>
+                                    <td>0.3323</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>ULF</strong></td>
+                                    <td>0.8474</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>VLF</strong></td>
+                                    <td>0.0415</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>LF</strong></td>
+                                    <td>0.0097</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HF</strong></td>
+                                    <td>0.1135</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VHF</strong></td>
+                                    <td>0.0871</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>TP</strong></td>
+                                    <td>0.0325</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFHF</strong></td>
+                                    <td>0.2540</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>LFn</strong></td>
+                                    <td>0.0194</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HFn</strong></td>
+                                    <td>0.8306</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LnHF</strong></td>
+                                    <td>0.3430</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>53</td>
+                                    <td>45</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="panel">
+                        <h3>High HR Activity </h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HRV Metric</th>
+                                    <th>p-value</th>
+                                    <th>Method</th>
+                                    <th>n (Group 1)</th>
+                                    <th>n (Group 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="not-sig">
+                                    <td><strong>RMSSD</strong></td>
+                                    <td>0.6804</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>SDNN</strong></td>
+                                    <td>0.3598</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HTI</strong></td>
+                                    <td>0.6705</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>ULF</strong></td>
+                                    <td>0.1153</td>
+                                    <td>t-test</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>VLF</strong></td>
+                                    <td><0.001</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>LF</strong></td>
+                                    <td>0.0106</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HF</strong></td>
+                                    <td>0.4198</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VHF</strong></td>
+                                    <td>0.8302</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>TP</strong></td>
+                                    <td>0.0094</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>LFHF</strong></td>
+                                    <td><0.001</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>LFn</strong></td>
+                                    <td>0.0075</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>HFn</strong></td>
+                                    <td><0.001</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LnHF</strong></td>
+                                    <td>0.4853</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>54</td>
+                                    <td>47</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="target-section">
+                <h2>PAT_SMOKE_PAST_H</h2>
+                <p style="margin-bottom: 16px; color: #586069; font-size: 0.9em;">
+                    Past smoking history: Yes vs No
+                </p>
+
+                <div class="comparison-grid">
+                    <div class="panel">
+                        <h3>Low HR Activity</h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HRV Metric</th>
+                                    <th>p-value</th>
+                                    <th>Method</th>
+                                    <th>n (Group 1)</th>
+                                    <th>n (Group 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="not-sig">
+                                    <td><strong>RMSSD</strong></td>
+                                    <td>0.8101</td>
+                                    <td>t-test</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>SDNN</strong></td>
+                                    <td>0.1059</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HTI</strong></td>
+                                    <td>0.2592</td>
+                                    <td>t-test</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>ULF</strong></td>
+                                    <td>0.9102</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VLF</strong></td>
+                                    <td>0.5474</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LF</strong></td>
+                                    <td>0.7350</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HF</strong></td>
+                                    <td>0.5145</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VHF</strong></td>
+                                    <td>0.6976</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>TP</strong></td>
+                                    <td>0.7827</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>LFHF</strong></td>
+                                    <td>0.0109</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFn</strong></td>
+                                    <td>0.6161</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>HFn</strong></td>
+                                    <td>0.0178</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LnHF</strong></td>
+                                    <td>0.1006</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>27</td>
+                                    <td>41</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="panel">
+                        <h3>High HR Activity </h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HRV Metric</th>
+                                    <th>p-value</th>
+                                    <th>Method</th>
+                                    <th>n (Group 1)</th>
+                                    <th>n (Group 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="not-sig">
+                                    <td><strong>RMSSD</strong></td>
+                                    <td>0.6556</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>SDNN</strong></td>
+                                    <td>0.7368</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HTI</strong></td>
+                                    <td>0.7003</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>ULF</strong></td>
+                                    <td>0.4026</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>VLF</strong></td>
+                                    <td>0.0330</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>LF</strong></td>
+                                    <td>0.0187</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>HF</strong></td>
+                                    <td>0.0116</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VHF</strong></td>
+                                    <td>0.1164</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>TP</strong></td>
+                                    <td>0.0158</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFHF</strong></td>
+                                    <td>0.9854</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFn</strong></td>
+                                    <td>0.1295</td>
+                                    <td>t-test</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HFn</strong></td>
+                                    <td>0.2583</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>LnHF</strong></td>
+                                    <td>0.0274</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>28</td>
+                                    <td>41</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="target-section">
+                <h2>DOC_FLARE</h2>
+                <p style="margin-bottom: 16px; color: #586069; font-size: 0.9em;">
+                    Doctor-reported flare: Yes vs No
+                </p>
+
+                <div class="comparison-grid">
+                    <div class="panel">
+                        <h3>Low HR Activity</h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HRV Metric</th>
+                                    <th>p-value</th>
+                                    <th>Method</th>
+                                    <th>n (Group 1)</th>
+                                    <th>n (Group 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="not-sig">
+                                    <td><strong>RMSSD</strong></td>
+                                    <td>0.1521</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>SDNN</strong></td>
+                                    <td>0.1124</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HTI</strong></td>
+                                    <td>0.2122</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>ULF</strong></td>
+                                    <td>0.0036</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>VLF</strong></td>
+                                    <td>0.0222</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>LF</strong></td>
+                                    <td>0.0190</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HF</strong></td>
+                                    <td>0.1725</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VHF</strong></td>
+                                    <td>0.6942</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>TP</strong></td>
+                                    <td>0.0150</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFHF</strong></td>
+                                    <td>0.0552</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFn</strong></td>
+                                    <td>0.5440</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HFn</strong></td>
+                                    <td>0.0644</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LnHF</strong></td>
+                                    <td>0.5060</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>17</td>
+                                    <td>78</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="panel">
+                        <h3>High HR Activity </h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HRV Metric</th>
+                                    <th>p-value</th>
+                                    <th>Method</th>
+                                    <th>n (Group 1)</th>
+                                    <th>n (Group 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="sig">
+                                    <td><strong>RMSSD</strong></td>
+                                    <td>0.0314</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>SDNN</strong></td>
+                                    <td>0.0403</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HTI</strong></td>
+                                    <td>0.0837</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>ULF</strong></td>
+                                    <td>0.7377</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VLF</strong></td>
+                                    <td>0.7586</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LF</strong></td>
+                                    <td>0.6898</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HF</strong></td>
+                                    <td>0.9160</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VHF</strong></td>
+                                    <td>0.4116</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>TP</strong></td>
+                                    <td>0.6563</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFHF</strong></td>
+                                    <td>0.4382</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFn</strong></td>
+                                    <td>0.5726</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HFn</strong></td>
+                                    <td>0.9233</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LnHF</strong></td>
+                                    <td>0.9744</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>18</td>
+                                    <td>80</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="target-section">
+                <h2>PAT_FLARE</h2>
+                <p style="margin-bottom: 16px; color: #586069; font-size: 0.9em;">
+                    Patient-reported flare: Yes vs No
+                </p>
+
+                <div class="comparison-grid">
+                    <div class="panel">
+                        <h3>Low HR Activity</h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HRV Metric</th>
+                                    <th>p-value</th>
+                                    <th>Method</th>
+                                    <th>n (Group 1)</th>
+                                    <th>n (Group 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="not-sig">
+                                    <td><strong>RMSSD</strong></td>
+                                    <td>0.0689</td>
+                                    <td>t-test</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>SDNN</strong></td>
+                                    <td>0.0644</td>
+                                    <td>t-test</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HTI</strong></td>
+                                    <td>0.0743</td>
+                                    <td>t-test</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>ULF</strong></td>
+                                    <td>0.0043</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>VLF</strong></td>
+                                    <td>0.0426</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>LF</strong></td>
+                                    <td>0.0058</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HF</strong></td>
+                                    <td>0.1161</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VHF</strong></td>
+                                    <td>0.7263</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>TP</strong></td>
+                                    <td>0.0130</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>LFHF</strong></td>
+                                    <td>0.0163</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFn</strong></td>
+                                    <td>0.3491</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>HFn</strong></td>
+                                    <td>0.0323</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LnHF</strong></td>
+                                    <td>0.3408</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>10</td>
+                                    <td>62</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="panel">
+                        <h3>High HR Activity </h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HRV Metric</th>
+                                    <th>p-value</th>
+                                    <th>Method</th>
+                                    <th>n (Group 1)</th>
+                                    <th>n (Group 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="sig">
+                                    <td><strong>RMSSD</strong></td>
+                                    <td>0.0381</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>SDNN</strong></td>
+                                    <td>0.0090</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="sig">
+                                    <td><strong>HTI</strong></td>
+                                    <td>0.0226</td>
+                                    <td>t-test</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>ULF</strong></td>
+                                    <td>0.8625</td>
+                                    <td>t-test</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VLF</strong></td>
+                                    <td>0.8048</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LF</strong></td>
+                                    <td>0.9463</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HF</strong></td>
+                                    <td>0.5642</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VHF</strong></td>
+                                    <td>0.0920</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>TP</strong></td>
+                                    <td>0.8398</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFHF</strong></td>
+                                    <td>0.0785</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFn</strong></td>
+                                    <td>0.6054</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HFn</strong></td>
+                                    <td>0.3416</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LnHF</strong></td>
+                                    <td>0.6265</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>11</td>
+                                    <td>64</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="target-section">
+                <h2>DOC_DIS_ACT</h2>
+                <p style="margin-bottom: 16px; color: #586069; font-size: 0.9em;">
+                    Doctor-assessed disease activity: Active vs Inactive
+                </p>
+
+                <div class="comparison-grid">
+                    <div class="panel">
+                        <h3>Low HR Activity</h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HRV Metric</th>
+                                    <th>p-value</th>
+                                    <th>Method</th>
+                                    <th>n (Group 1)</th>
+                                    <th>n (Group 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="not-sig">
+                                    <td><strong>RMSSD</strong></td>
+                                    <td>0.2041</td>
+                                    <td>t-test</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>SDNN</strong></td>
+                                    <td>0.2044</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HTI</strong></td>
+                                    <td>0.3658</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>ULF</strong></td>
+                                    <td>0.2471</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VLF</strong></td>
+                                    <td>0.2097</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LF</strong></td>
+                                    <td>0.0734</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HF</strong></td>
+                                    <td>0.1243</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VHF</strong></td>
+                                    <td>0.3658</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>TP</strong></td>
+                                    <td>0.1651</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFHF</strong></td>
+                                    <td>0.4411</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFn</strong></td>
+                                    <td>0.5792</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HFn</strong></td>
+                                    <td>0.6311</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LnHF</strong></td>
+                                    <td>0.9140</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>47</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="panel">
+                        <h3>High HR Activity </h3>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>HRV Metric</th>
+                                    <th>p-value</th>
+                                    <th>Method</th>
+                                    <th>n (Group 1)</th>
+                                    <th>n (Group 2)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr class="not-sig">
+                                    <td><strong>RMSSD</strong></td>
+                                    <td>0.8395</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>SDNN</strong></td>
+                                    <td>0.5482</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HTI</strong></td>
+                                    <td>0.6264</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>ULF</strong></td>
+                                    <td>0.3763</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VLF</strong></td>
+                                    <td>0.5625</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LF</strong></td>
+                                    <td>0.0673</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HF</strong></td>
+                                    <td>0.2482</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>VHF</strong></td>
+                                    <td>0.2072</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>TP</strong></td>
+                                    <td>0.1735</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFHF</strong></td>
+                                    <td>0.3611</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LFn</strong></td>
+                                    <td>0.0716</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>HFn</strong></td>
+                                    <td>0.8786</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                                <tr class="not-sig">
+                                    <td><strong>LnHF</strong></td>
+                                    <td>0.2395</td>
+                                    <td>Mann-Whitney U</td>
+                                    <td>48</td>
+                                    <td>50</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <p>Binary Targets Hypothesis Testing | HRV Metrics Analysis</p>
+            <p style="margin-top: 8px; font-size: 0.85em;">
+                Low HR Activity | High HR Activity
+            </p>
+        </div>
+    </div>
+</body>
+</html>
