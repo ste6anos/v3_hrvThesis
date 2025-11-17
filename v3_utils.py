@@ -235,3 +235,134 @@ class FileUtils:
         
 
 class StatsUtils:
+    @staticmethod
+    def extract_crp_data_from_csv(file_path):
+        """
+        Extracts and normalizes CRP data from a CSV file.
+        
+        Converts mg/dL to mg/L by multiplying by 10.
+        
+        Args:
+            file_path (str): Path to the CSV file.
+        
+        Returns:
+            pd.DataFrame: Cleaned CRP DataFrame with 'patientid' and 'DOC_PAT_CRP_LEVEL'.
+        """
+        df = pd.read_csv(file_path, index_col=0)
+        columns = ['patientid', 'DOC_PAT_CRP_DATE', 'DOC_PAT_CRP_LEVEL', 'DOC_PAT_CRP_UNIT']
+        crp_df = df[columns].copy()
+        crp_df['DOC_PAT_CRP_LEVEL'] = crp_df['DOC_PAT_CRP_LEVEL'].where(
+            df['DOC_PAT_CRP_UNIT'] != 'mg/dL', df['DOC_PAT_CRP_LEVEL'] * 10
+        )
+        crp_df = crp_df[["patientid", "DOC_PAT_CRP_LEVEL"]]
+        return crp_df
+    
+    @staticmethod
+    def hypothesis_test_binary_target(df1, df2):
+        """
+        Performs group comparison tests (t-test or Mann-Whitney U) for each numeric metric
+        between two DataFrames (e.g., true vs. false groups).
+        
+        Uses normality (Shapiro-Wilk) to choose parametric/non-parametric test.
+        
+        Args:
+            df1, df2 (pd.DataFrame): Groups to compare.
+        
+        Returns:
+            pd.DataFrame: Sorted results by p-value.
+        """
+        results = {}
+        metrics = df1.select_dtypes(include='number').columns.intersection(df2.select_dtypes(include='number').columns)
+        
+        for metric in metrics:
+            data1 = df1[metric].dropna()
+            data2 = df2[metric].dropna()
+            if len(data1) < 3 or len(data2) < 3:
+                continue  # Skip small samples
+            
+            _, p1 = shapiro(data1)
+            _, p2 = shapiro(data2)
+            
+            if p1 > 0.05 and p2 > 0.05:
+                t_stat, p_value = ttest_ind(data1, data2, equal_var=False)
+                method = "t_test"
+            else:
+                u_stat, p_value = mannwhitneyu(data1, data2, alternative="two-sided")
+                method = "u_test"
+            
+            results[metric] = {"method": method, "p-value": p_value, "p1": p1, "p2": p2}
+        
+        if not results:
+            return pd.DataFrame()
+        
+        results_df = pd.DataFrame(results).T
+        results_df = results_df.sort_values("p-value")
+        return results_df
+
+    @staticmethod
+    def correlation_test(df):
+        """
+        Performs correlation tests (Pearson or Spearman) between numeric columns (except last)
+        and the last column (target) of the DataFrame.
+        
+        Drops NaNs in target upfront; per-metric, drops rows with metric NaNs.
+        Uses normality to choose method.
+        
+        Args:
+            df (pd.DataFrame): DataFrame with metrics + target as last column.
+        
+        Returns:
+            pd.DataFrame: Sorted results by p-value.
+        """
+        if df.empty or len(df.columns) < 2:
+            return pd.DataFrame()
+        
+        target_name = df.columns[-1]
+        
+        # Drop rows with NaN in target upfront
+        df = df.dropna(subset=[target_name])
+        if df.empty or len(df) < 3:
+            return pd.DataFrame()
+        
+        # Numeric metrics (exclude target)
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        metric_cols = [col for col in numeric_cols if col != target_name]
+        
+        if not metric_cols:
+            return pd.DataFrame()
+        
+        results = {}
+        for metric in metric_cols:
+            temp_df = df.dropna(subset=[metric])
+            if len(temp_df) < 3:
+                continue  # Skip small samples
+            
+            metric_clean = temp_df[metric]
+            target_aligned = temp_df[target_name]
+            _, p_metric = shapiro(metric_clean)
+            _, p_target = shapiro(target_aligned)
+            
+            if p_metric > 0.05 and p_target > 0.05:
+                corr_stat, p_value = pearsonr(metric_clean, target_aligned)
+                method = "pearson"
+            else:
+                corr_result = spearmanr(metric_clean, target_aligned)
+                corr_stat = corr_result.correlation
+                p_value = corr_result.pvalue
+                method = "spearman"
+            
+            results[metric] = {
+                "method": method,
+                "correlation": corr_stat,
+                "p-value": p_value,
+                "p_metric_normal": p_metric,
+                "p_target_normal": p_target,
+                "n_samples": len(metric_clean)
+            }
+        
+        if not results:
+            return pd.DataFrame()
+        
+        results_df = pd.DataFrame(results).T
+        results_df = results_df.sort_values("p-value")
+        return results_df
